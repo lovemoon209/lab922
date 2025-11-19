@@ -1,0 +1,52 @@
+#include <gtest/gtest.h>
+#include <sstream>
+#include <iostream>
+
+#define ERROR_MSG(code, ...) ErrorMessage(code, #__VA_ARGS__)
+
+void ErrorMessage(int code, const char *message) {
+    std::cout << "Error code " << code << ": " << message << std::endl;
+}
+
+// --- Коди помилок ---
+#define ERR_FILE_NOT_FOUND 1
+#define ERR_INVALID_INPUT 2
+#define ERR_OUT_OF_RANGE 3
+
+// --- Тести ---
+TEST(ErrorMessageTest, FileNotFound) {
+    std::stringstream buffer;
+    std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf()); // перенаправлення
+
+    ERROR_MSG(ERR_FILE_NOT_FOUND, File, not, found);
+
+    std::cout.rdbuf(oldCout); // відновлення std::cout
+    EXPECT_EQ(buffer.str(), "Error code 1: File not found\n");
+}
+
+TEST(ErrorMessageTest, InvalidInput) {
+    std::stringstream buffer;
+    std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf());
+
+    ERROR_MSG(ERR_INVALID_INPUT, Invalid, input, detected);
+
+    std::cout.rdbuf(oldCout);
+    EXPECT_EQ(buffer.str(), "Error code 2: Invalid input detected\n");
+}
+
+TEST(ErrorMessageTest, OutOfRange) {
+    std::stringstream buffer;
+    std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf());
+
+    ERROR_MSG(ERR_OUT_OF_RANGE, Value, out, of, range);
+
+    std::cout.rdbuf(oldCout);
+    EXPECT_EQ(buffer.str(), "Error code 3: Value out of of range\n");
+}
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+admin@MacBook-Air-admin-2 tems % 
